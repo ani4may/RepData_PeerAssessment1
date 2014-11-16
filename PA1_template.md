@@ -7,7 +7,8 @@ keep_MD: true
 
 
 ## Loading and preprocessing the data
-```{r processing}
+
+```r
 library(plyr)
 library(dplyr)
 library(ggplot2) # invoke libraries
@@ -17,37 +18,46 @@ data_df<-tbl_df(data) # convert to table-data-frame for using 'dplyr'
 
 
 ## What is mean total number of steps taken per day?
-```{r quest 1}
+
+```r
 z<-aggregate(steps ~ date, data_df, sum)
 mean_val<-mean(z[,2],na.rm = TRUE)
 median_val<-median(z[,2],na.rm = TRUE)
 ```
 
-The value of the mean number of steps per day are:`r mean_val` and median is : `r median_val`
+The value of the mean number of steps per day are:1.0766189 &times; 10<sup>4</sup> and median is : 10765
 
-```{r quest 1 plot,fig.height=4,warning=FALSE}
+
+```r
 qplot(x = steps, data = z)+
      geom_vline(aes(xintercept=mean_val),color="red", linetype="solid", size=.5)+
      geom_vline(aes(xintercept=median_val),color="blue", linetype="dashed", size=.5)
+```
 
 ```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![plot of chunk quest 1 plot](figure/quest 1 plot-1.png) 
 
 ## What is the average daily activity pattern?
 
-```{r quest 2 plot,fig.height=4,warning=FALSE}
+
+```r
 z<-aggregate(steps ~ interval, data_df, mean)
 qplot(x = interval,y=steps, data = z,geom="line")+
      geom_hline(aes(yintercept=max(steps, na.rm=T)),color="red",linetype="solid", size=1)
-
-
 ```
+
+![plot of chunk quest 2 plot](figure/quest 2 plot-1.png) 
 
 
 ## Imputing missing values
 
-The total number of NA valued fields is: `r sum(is.na(data_df[,1]))`
+The total number of NA valued fields is: 2304
 
-```{r quest 3,cache=TRUE}
+
+```r
 dates<-data_df[,2]                #|
 dates<-as.factor(unlist(dates))   #|  takes out the date field, 
 dates<-as.Date(dates)             #|  converts it to a table of dates  
@@ -81,13 +91,21 @@ qplot(x = steps, data = z)+
      geom_vline(aes(xintercept=mean(steps, na.rm=T)),color="red", linetype="solid", size=.5)+ 
      #| a nice red solid line to show mean
      geom_vline(aes(xintercept=median(steps, na.rm=T)),color="blue", linetype="dashed", size=.5)
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![plot of chunk quest 3](figure/quest 3-1.png) 
+
+```r
 #| a blue dotted one that almost sits on the red line to show median
-
-
 ```
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r quest 4}
+
+```r
 day<-weekdays(dates) # looks for days of the week 
 day<-as.factor(day)
 day<-revalue(day, c("Monday"="weekday", "Tuesday"="weekday","Wednesday"="weekday","Thursday"="weekday","Friday"="weekday","Saturday"="weekend","Sunday"="weekend")) # replacement of days to either weekdays or weekends
@@ -97,7 +115,13 @@ z<-aggregate(steps ~ interval+day, data_df, mean) #the function that saved me fr
 
 The varied behaviour of steps taken on weekdays vs weekends is shown below:
 
-```{r quest 4 plot}
+
+```r
 qplot(x = interval,y=steps, data = z,facets = .~ day,geom="line") 
+```
+
+![plot of chunk quest 4 plot](figure/quest 4 plot-1.png) 
+
+```r
 # couldn't get facet_wrap to work  
 ```
